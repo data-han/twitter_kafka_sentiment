@@ -8,7 +8,9 @@ This has led me to think if I could obtain real-time data from Twitter on this t
 ## Introduction/ Set up
 In this set-up, I am using the following tools:
 
-1. tweepy python library
+![plot](docs/Architecture.png)
+
+1. Twitter - tweepy python library
    1. Purpose: to obtain streaming Tweets
    2. Obtain Twitter Developer credentials including consumer key, consumer secret, access token, access token secret
 2. Kafka
@@ -30,16 +32,17 @@ In this set-up, I am using the following tools:
          1. manages brokers together
          2. helps in performing leader election for partitions
    3. Set-up
-      1. Start Zookeeper first
+      1. brew install kafka
+      2. Start Zookeeper first
          1. bin/zookeeper-server-start.sh config/zookeeper.properties
-      2. Start Kafka Broker service
+      3. Start Kafka Broker service
          1. bin/kafka-server-start.sh config/server.properties
-      3. Create topic
+      4. Create topic
          1. bin/kafka-topics.sh --create --topic twitterdata --bootstrap-server localhost:9092
 3. Structured Streaming via Pyspark
    1. pip install pyspark
    2. when running Kafka integration with structured streaming, need to use:
-      1. spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 consumer_or_producer.py
+      1. spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 <consumer_or_producer.py>
 4. InfluxDB
    1. Purpose: store time-series data
    2. Info
@@ -50,15 +53,29 @@ In this set-up, I am using the following tools:
       5. Tag: optional - like categories or usually commonly-queried columns
    3. Set-up
       1. Brew install influxdb-cli
-      2. create config - influx config create --config <name> --host-url <localhost_port> --org <name> --token <token> --active
+      2. Start Influxdb, localhost:8086, create account, create bucket, org, token
+      3. create config - influx config create --config <name> --host-url <localhost_port> --org <name> --token <token> --active
 
 5. Grafana
    1. Purpose: monitor data in real-time, usually for monitoring operational activity/ logs
       1. Set-up
          1. brew install grafana
          2. brew services start grafana
+         3. localhost:3000 - create account, set up InfluxDB data source
+         4. https://grafana.com/docs/grafana/latest/getting-started/getting-started-influxdb/
 
-# Credits
+## Process
+1. Start Kafka Zookeeper service - sh kstart_zookeeper.sh
+2. Start Kafka Broker service - sh kstart_kafka.sh
+3. Start influxdb - sh influxdb.sh
+4. Start Grafana - sh grafana.sh
+5. Run extract_twitter_to_kafka.py - this reads tweets from Twitter and load into Kafka
+6. Run process_spark_streaming.py - reads from Kafka, transform data, performing sentiment analysis and load into another topic in Kafka. Take note of Kafka-Pyspark streaming integration.
+7. Run load_kafka_to_influxdb.py
+8. Check InfluxDB - http://localhost:8086 - run metrics, take note of query to be used
+9. Check Grafana - http://localhost:3000 - build dashboard using queries
+
+## Credits
 https://datasciencechalktalk.wordpress.com/2019/07/17/streaming-analysis-with-kafka-influxdb-and-grafana/
 https://towardsdatascience.com/twitter-sentiment-analysis-a-tale-of-stream-processing-8fd92e19a6e6
 https://blaqfireroundup.wordpress.com/2021/11/01/kafka-and-spark-structured-streaming/
