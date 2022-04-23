@@ -77,6 +77,9 @@ In this set-up, I am using the following tools:
 8. Check InfluxDB - http://localhost:8086 - run metrics, take note of query to be used
 9. Check Grafana - http://localhost:3000 - build dashboard using queries
 
+## Output
+![plot](docs/Grafana_dashboard.png)
+
 ## Credits
 https://datasciencechalktalk.wordpress.com/2019/07/17/streaming-analysis-with-kafka-influxdb-and-grafana/
 https://towardsdatascience.com/twitter-sentiment-analysis-a-tale-of-stream-processing-8fd92e19a6e6
