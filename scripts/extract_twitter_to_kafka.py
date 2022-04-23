@@ -1,8 +1,6 @@
 import tweepy
 import os
 from kafka import KafkaProducer
-import json
-from datetime import datetime
 from dotenv import load_dotenv
 import logging
 
@@ -14,48 +12,26 @@ consumer_secret = os.getenv('twitter_consumer_secret')
 access_token = os.getenv('twitter_access_token')
 access_token_secret = os.getenv('twitter_access_token_secret')
 
-topic_name = "twitterdata"
 logger = logging.getLogger(__name__)
 
 producer = KafkaProducer(bootstrap_servers='localhost:9092') #Same port as your Kafka server
 
-
-def normalize_timestamp(time):
-    mytime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
-    return mytime.strftime('%Y-%m-%d %H:%M:%S')
+topic_name = "twitterdata"
+search_input = "nba, #NBA, NBA, #nba, Nba"
 
 
 class TwitterStreamer():
     def stream_data(self):
-        self.logger.info(f"{topic_name} Stream starting...")
+        logger.info(f"{topic_name} Stream starting for {search_input}...")
 
         twitter_stream = MyListener(consumer_key, consumer_secret, access_token, access_token_secret)
-        twitter_stream.filter(track=["nba"])
+        twitter_stream.filter(track=[search_input])
 
 
 class MyListener(tweepy.Stream):
     def on_data(self, data):
         try:
-            data_json = json.loads(data)
-            id = data_json['id']
-            text = data_json['text'].encode('utf-8')
-            user = data_json['user']
-            reply_count = data_json['reply_count']
-            retweet_count = data_json['retweet_count']
-            lang = data_json['lang']
-            timestamp = data_json['timestamp_ms']
-
-            # data = {
-            #     'id' : id,
-            #     'text': text,
-            #     'user': user,
-            #     'reply_count': reply_count,
-            #     'retweet_count': retweet_count,
-            #     'lang': lang,
-            #     'timestamp': pd.to_datetime(float(timestamp), unit='ms')
-            # }
-            # print(data_json.keys())
-
+            logger.info(f"Sending data to kafka...")
             producer.send(topic_name, data)
             print(data)
             return True
@@ -71,4 +47,3 @@ class MyListener(tweepy.Stream):
 if __name__ == "__main__":
     TS = TwitterStreamer()
     TS.stream_data()
-
