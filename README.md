@@ -3,7 +3,9 @@
 ## Background
 It's the time of the year and the NBA playoffs are happening right now. While I was watching the highlights on YouTube, I often find myself scrolling down to see what kind of observations do others have. Interestingly enough, there are some people rooting for their favorite teams but there are also comments criticising certain players or plays.
 
-This has led me to think if I could obtain real-time data from Twitter on this topic. Therefore, I wanted to build a pipeline to obtain real-time Tweets on #NBA while learning about a few new technologies including Kafka and Spark streaming. Here, I managed to build a real-time dashboard using InfluxDB & Grafana, performing a simple sentiment analysis and showing the polarity (positive/negative/neutral) of each tweet over time. Pretty interesting to see what people are saying especially during game-time.
+This has led me to think if I could obtain real-time data from Twitter on this topic. Therefore, I wanted to build a pipeline to obtain real-time Tweets on #NBA while learning about a few new technologies including Kafka and Spark streaming. Here, I managed to build a real-time dashboard using InfluxDB & Grafana, performing a simple sentiment analysis and showing the polarity (positive/negative/neutral) of each tweet over time.
+
+My focus here would be trying out the different technologies and looking at how people react when watching the games. For the sentiment analyses, I took references from other authors as credited below. Although some tweets may not be categorised correctly, it is still pretty interesting to see what people are saying especially during game-time.
 
 ## Introduction/ Set up
 In this set-up, I am using the following tools:

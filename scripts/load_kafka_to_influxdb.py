@@ -29,7 +29,6 @@ for message in consumer:
     mpart = message.partition
     moffset = message.offset
 
-    print(f'Message received: {message}')
     client = InfluxDBClient(url="http://localhost:8086", token=token, org=org)
     write_api = client.write_api(write_options=SYNCHRONOUS)
 
