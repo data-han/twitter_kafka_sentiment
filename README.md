@@ -1,7 +1,7 @@
 # Twitter Kafka Real-Time Streaming
 
 ## Background
-It's the time of the year and the NBA playoffs are happening right now. While I was watching the highlights on YouTube, I often find myself scrolling through the comments section. Interestingly, while some rooted for their favorite teams, there were also criticisms on certain players or plays.
+It's the time of the year and the NBA playoffs are happening right now. While I was watching the highlights on YouTube, I often find myself scrolling through the comments section. Interestingly, while some rooted for their favourite teams, there were also criticisms on certain players or plays.
 
 This made me wonder if I could gather general sentiments from Twitter in real-time on the games. Therefore, I wanted to build a pipeline to obtain real-time Tweets on #NBA while learning about a few technologies including Kafka and Spark streaming. Here, I managed to build a real-time dashboard using InfluxDB & Grafana, performing a simple sentiment analysis and showing the polarity (positive/negative/neutral) of each tweet over time.
 
