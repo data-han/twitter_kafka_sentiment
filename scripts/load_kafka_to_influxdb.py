@@ -32,11 +32,13 @@ for message in consumer:
     client = InfluxDBClient(url="http://localhost:8086", token=token, org=org)
     write_api = client.write_api(write_options=SYNCHRONOUS)
 
+    print(message)
     dataPoint = Point("nba_tweet")\
         .tag("polarity", mvalue['polarity']) \
         .field("polarity_v", mvalue['polarity_v']) \
         .field('subjectivity_v', mvalue['subjectivity_v']) \
-        .field('text', mvalue['text'])
+        .field('text', mvalue['text'])\
+        .time(mvalue['ts'])
 
     print(dataPoint)
 

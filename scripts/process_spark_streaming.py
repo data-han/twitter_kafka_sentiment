@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     df = df.withColumn("data", from_json(df.value, Sentiment.get_schema())).select("data.*")
     df = df \
-        .withColumn("ts", to_timestamp(from_unixtime(expr("timestamp_ms / 1000")))) \
+        .withColumn("ts", to_timestamp(from_unixtime(expr("timestamp_ms/1000")))) \
         .withWatermark("ts", "1 seconds")
 
     # Preprocess the data
