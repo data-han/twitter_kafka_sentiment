@@ -86,6 +86,14 @@ In this set-up, I am using the following tools:
 3. Include other metrics to visualize more complete analysis
 4. Familiarise with InfluxDB / Grafana to fully make use
 5. Deploy on Docker with single set-up command
+6. Improve reading/writing performance of Structured Streaming to reduce offset lags
+
+## Some commands
+- pyspark kafka integration - when running structured streaming: spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1 <script.py>
+- delete influxDB data (clean-up) -
+  - influx delete --bucket <bucket> \
+  --start '1970-01-01T00:00:00Z' \
+    --stop $(date +"%Y-%m-%dT%H:%M:%SZ")
 
 ## Credits
 https://datasciencechalktalk.wordpress.com/2019/07/17/streaming-analysis-with-kafka-influxdb-and-grafana/
