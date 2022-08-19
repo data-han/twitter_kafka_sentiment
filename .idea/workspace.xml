@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6ab757b7-bfc0-496b-84b3-911c782c64c1" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/~$Architecture.pptx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/process_spark_streaming.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/process_spark_streaming.py" afterDir="false" />
-    </list>
+    <list default="true" id="6ab757b7-bfc0-496b-84b3-911c782c64c1" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

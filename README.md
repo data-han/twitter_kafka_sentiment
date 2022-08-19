@@ -42,62 +42,62 @@ In this set-up, I am using the following tools:
       4. Create topic
          1. ``bin/kafka-topics.sh --create --topic twitterdata --bootstrap-server localhost:9092``
    4. Features/ Items to take note of
-      1. Processing late arriving data/ events
+      1. **Processing late arriving data/ events**
          1. Documentation: https://aseigneurin.github.io/2018/08/27/kafka-streams-processing-late-events.html
-         2. Terminologies:
+         2. **Terminologies**:
             1. event time: indicates when event happened at the source
             2. processing time: indicates when event is processed by application
          3. Processing time happens after event time for 2 reasons:
             1. can take time for event to reach Kafka broker; event might take time to cache at client before sending out or due to network latency (delay in communication over a network)
             2. the processing engine may not process events as soon as they reach broker
-         4. Solution Ideas:
+         4. **Solution Ideas:**
             1. discard late event. e.g. if event that should happen in t1 comes in t2, we will ignore this. Aggregation for t1 will be incorrect but for t2 will be correct
             2. wait till end of window; wait till end of t2 to produce result of t1; both t1 and t2 will be correct but at aggregates happen at later time
 3. Structured Streaming via Pyspark
    1. Documentation: https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#basic-concepts
    2. Info:
       1. Every data arriving on the stream is like a new row being appended to a table
-      2. Modes:
+      2. **Modes**:
          1. Complete - entire updated result table will be written to external storage
          2. Append - only new rows appended in result table since last trigger will be written to external storage. Only used when existing data in external storage won't change
          3. Update - only rows that are updated in result table since last trigger will be written to external storage.
-      3. Types of time window:
+      3. **Types of time window:**
          1. Tumbling window - fixed size, non-overlapping and contiguous time intervals. An input is only bound to one window
          2. Sliding window - similar to tumbling but can overlap if duration of slide is smaller than duration of window. Both tumbling and slide uses ``window`` function
          3. Session window - ``groupBy(session_window(..))``
-      4. Triggers
+      4. **Triggers**
          1. default: micro-batches will be generated once previous micro-batch has completed processing
-         2. fixed interval micro-batches: kicked off at user-specified intervals 
+         2. **fixed interval micro-batches**: kicked off at user-specified intervals 
             1. if previous micro-batch completes within the interval, the engine will wait until the interval is over before kicking off the next micro-batch
             2. if the previous micro-batch takes longer, the next micro-batch will start as soon as previous completes
             3. if no new data, no micro-batch will be kicked off
-         3. one-time micro-batch: execute only one time to process all available data and then stop. This is useful where you want to periodically spin up a cluster, process everything available since last period and then shutdown. This is cost saving
-         4. available-now micro-batch: similar to one-time, process all available and then stop. Difference is that, it will process data in multiple micro-batches based on the source options, which will result in better query scalability
+         3. **one-time micro-batch**: execute only one time to process all available data and then stop. This is useful where you want to periodically spin up a cluster, process everything available since last period and then shutdown. This is cost saving
+         4. **available-now micro-batch**: similar to one-time, process all available and then stop. Difference is that, it will process data in multiple micro-batches based on the source options, which will result in better query scalability
          5. continuous fixed-time checkpoint interval: low latency, continuous processing mode. (still in experiment)
    3. Set up
       1. ``pip install pyspark``
       2. when running Kafka integration with structured streaming, need to use:
          1. ``spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1`` <consumer_or_producer.py>
-   4. Features/ Items to take note of
-      1. Handling late data and Watermarking
+   4. **Features/ Items to take note of**
+      1. **Handling late data and Watermarking**
          1. ```.groupBy(window(words.timestamp, "10minutes", "5minutes"))``` -> means that we want to aggregate words within each 10 min window, updating every 5 mins -> word counts received between 10 min windows 12:00-12:10, 12:05-12:15, 12:10-12:20 etc
          2. What if an event (event-time 12:04) gets processed at 12:11? - the window aggregate of 12:00-12:10 needs to be updated. To run this query for days, it's required for system to bound the amount of intermediate in-memory state it accumulates, meaning it needs to know when the old aggregate can be dropped from in-memory state because application is not going to receive late data for the aggregation anymore (if not you need large memory to store old aggregates)
          3. **Watermarking** allows engine to track current event time and clean up old data automatically, setting a threshold on how late the data is expected to arrive. Late data will be dropped
          4. ``.withWatermark("timestamp", "10 minutes") \``
-      2. Streaming deduplication
+      2. **Streaming deduplication**
          1. You can deduplicate records in data streams using a unique identifier in the events. This is exactly same as deduplication on static using a unique identifier column. 
          2. The query will store the necessary amount of data from previous records such that it can filter duplicate records.
          3. Similar to aggregations, you can use deduplication with or without watermarking.
             1. With watermark - If there is an upper bound on how late a duplicate record may arrive, then you can define a watermark on an event time column and deduplicate using both the guid and the event time columns. The query will use the watermark to remove old state data from past records that are not expected to get any duplicates any more. This bounds the amount of the state the query has to maintain.
             2. Without watermark - Since there are no bounds on when a duplicate record may arrive, the query stores the data from all the past records as state.
-      3. Unsupported Operations
+      3. **Unsupported Operations**
          1. Multiple streaming aggregations
          2. Limit and take the first N rows
          3. Distinct operations
          4. Deduplication operation is not supported after aggregation 
          5. Sorting operations are supported on streaming Datasets only after an aggregation and in Complete Output Mode.
          6. Few types of outer joins
-      4. Recovering failures with Checkpointing
+      4. **Recovering failures with Checkpointing**
          1. In case of a failure or intentional shutdown, you can recover the previous progress and state of a previous query, and continue where it left off.
          2. This is done using checkpointing and write-ahead logs.
          3. You can configure a query with a checkpoint location, and the query will save all the progress information (i.e. range of offsets processed in each trigger) and the running aggregates (e.g. word counts in the quick example) to the checkpoint location
