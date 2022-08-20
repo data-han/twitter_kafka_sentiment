@@ -53,6 +53,29 @@ In this set-up, I am using the following tools:
          4. **Solution Ideas:**
             1. discard late event. e.g. if event that should happen in t1 comes in t2, we will ignore this. Aggregation for t1 will be incorrect but for t2 will be correct
             2. wait till end of window; wait till end of t2 to produce result of t1; both t1 and t2 will be correct but at aggregates happen at later time
+      2. **Why is Kafka fast?**
+         1. Documentation: https://www.geeksforgeeks.org/why-apache-kafka-is-so-fast/
+         2. Description: Kafka aims to provide high throughput (large amount of data) and low latency (low delay)
+         3. Low-latency I/O - there are two possible reasons which can be used for storing and caching data: ``Random Access Memory (RAM)`` and ``Disk``
+            1. Usually, one way to achieve low-latency while delivering messages is to use RAM. It's preferred over disk because **disks have high seek time,** thus making them slower
+            2. The downside is that it is expensive to use RAM when data flowing is around 10MB to 500GB per second or more
+            3. Thus, Kafka relies on **file system** for storage and caching of messages. Although it uses Disk approach, it still manages to achieve low latency
+         4. Reasons:
+            1. **Kafka avoids Seek Time** using **Sequential I/O**
+               1. It uses a data structure called 'log' which is an append only sequence of events, ordered by time. The log is basically a queue and it can be appended at its end by the producer and the subscribers can process the messages in their own accord by maintaining pointers.
+               2. The first record published gets an offset of 0 and the second 1 etc
+               3. Data is consumed by consumer by accessing position specified by offset
+               4. This also makes Kafka fault-tolerant since stored offsets can be used by other consumers to read new records in case previous consumer fails
+            2. **Zero Copy Principle**
+               1. When data is fetched from memory and sent over network, it first copies data from Kernel Context into Application Context (from one layer to another)
+               2. To send data to internet, it copies data again from Application to Kernel context (back and forth)
+               3. This creates a redundant operation, leading to consumption of CPU cycles and memory bandwidth, resulting in drop in performance especially if data are huge
+               4. **Zero Copy Principle** doesn't copy data to Application context, it just resides within Kernel and only copies data internally
+            3. **Optimal Data Structure**
+               1. The tree seems to be the data structure of choice when it comes to data storage. Most of the modern databases use some form of the tree data structure. Eg. MongoDB uses BTree.
+                  1. Kafka, on the other hand, is not a database but a messaging system and hence it experiences more read/write operations compared to a database. 
+                  2. Using a tree for this may lead to random I/O, eventually resulting in a disk seeks – which is catastrophic in terms of performance.
+               2. Thus, it uses a **queue** since all the data is appended at the end and the reads are very simple by the use of pointers. These operations are O(1) thereby confirming the efficiency of the queue data structure for Kafka.
 3. Structured Streaming via Pyspark
    1. Documentation: https://spark.apache.org/docs/latest/structured-streaming-programming-guide.html#basic-concepts
    2. Info:
