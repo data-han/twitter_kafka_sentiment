@@ -16,8 +16,13 @@ In this set-up, I am using the following tools:
    1. Purpose: to obtain streaming Tweets
    2. Obtain Twitter Developer credentials including consumer key, consumer secret, access token, access token secret
 2. Kafka
-   1. Purpose: store streaming data while waiting to be processed by producer
-   2. Info
+   1. Kafka is a distributed event streaming platform that lets you read, write, store, and process events (also called records or messages in the documentation) across many machines. 
+   <br><br>
+   Example events are payment transactions, geolocation updates from mobile phones, shipping orders, sensor measurements from IoT devices or medical equipment, and much more. These events are organized and stored in topics. Very simplified, a topic is similar to a folder in a filesystem, and the events are the files in that folder.
+   2. Architecture
+   ![plot](docs/kafka_arch.png)
+   3. Purpose: store streaming data while waiting to be processed by producer
+   4. Info
       1. Event: an event records the fact that 'something happened'
       2. Topic: a particular stream of data, like a 'table' in a database or 'folder' in filesystem
       3. Producers: client applications writing data to Kafka
@@ -33,7 +38,11 @@ In this set-up, I am using the following tools:
       6. Zookeeper:
          1. manages brokers together
          2. helps in performing leader election for partitions
-   3. Set-up
+      7. Delivery Semantics:
+         1. At most once: offsets committed as soon as message is received. If processing goes wrong, message will be lost.
+         2. At least once: offsets committed after message processed. If processing goes wrong, message can be read again. Can result in duplicate, make sure process is idempotent
+         3. Exactly once: can be achieved using Kafka Streams API
+   5. Set-up
       1. ``brew install kafka``
       2. Start Zookeeper first
          1. ``bin/zookeeper-server-start.sh config/zookeeper.properties``
@@ -41,7 +50,7 @@ In this set-up, I am using the following tools:
          1. ``bin/kafka-server-start.sh config/server.properties``
       4. Create topic
          1. ``bin/kafka-topics.sh --create --topic twitterdata --bootstrap-server localhost:9092``
-   4. Features/ Items to take note of
+   6. Features/ Items to take note of
       1. **Processing late arriving data/ events**
          1. Documentation: https://aseigneurin.github.io/2018/08/27/kafka-streams-processing-late-events.html
          2. **Terminologies**:
@@ -127,7 +136,7 @@ In this set-up, I am using the following tools:
          4. This checkpoint location has to be a path in an HDFS compatible file system, and can be set as an option in the DataStreamWriter when starting a query.
          5. ``.option("checkpointLocation", "path/to/HDFS/dir") ``
 4. InfluxDB
-   1. Purpose: store time-series data
+   1. Purpose: store time-series data (industry standard for time-series) - useful for time dependent sequential data coming at high rate and quick retrieval as time series
    2. Info
       1. Bucket: named location where time series data is stored
       2. Field: key-value pair data structure that stores meta data and actual data value. - not indexed
